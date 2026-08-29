@@ -20,7 +20,7 @@ class DashboardController extends Controller
         // 1. Total Saldo
         $totalSaldo = $user->accounts()->sum('saldo');
 
-        // 2. Income & Expense this month
+        // 2. Income & Expense this month (Excludes 'saving' and 'transfer')
         $incomeBulanIni = (float) $user->transactions()
             ->where('tipe', 'income')
             ->whereBetween('tanggal', [$startOfMonth, $endOfMonth])
@@ -39,7 +39,7 @@ class DashboardController extends Controller
 
         // 4. 5 Transaksi Terakhir
         $recentTransactions = $user->transactions()
-            ->with(['account', 'destinationAccount', 'category'])
+            ->with(['account', 'destinationAccount', 'category', 'goal'])
             ->orderBy('tanggal', 'desc')
             ->orderBy('id', 'desc')
             ->take(5)
@@ -75,6 +75,22 @@ class DashboardController extends Controller
                 ];
             });
 
+        // 6. Upcoming Recurring Bills (Due within next 7 days)
+        $in7Days = $now->copy()->addDays(7)->toDateString();
+        $upcomingBills = $user->recurringRules()
+            ->with(['account', 'category'])
+            ->where('is_active', true)
+            ->whereBetween('tanggal_berikutnya', [$now->toDateString(), $in7Days])
+            ->orderBy('tanggal_berikutnya', 'asc')
+            ->take(4)
+            ->get();
+
+        // 7. Active Financial Goals
+        $activeGoals = $user->goals()
+            ->orderBy('deadline', 'asc')
+            ->take(3)
+            ->get();
+
         return view('dashboard', [
             'totalSaldo' => $totalSaldo,
             'incomeBulanIni' => $incomeBulanIni,
@@ -84,6 +100,8 @@ class DashboardController extends Controller
             'accounts' => $accounts,
             'recentTransactions' => $recentTransactions,
             'budgets' => $budgets,
+            'upcomingBills' => $upcomingBills,
+            'activeGoals' => $activeGoals,
             'currentPeriod' => $now->translatedFormat('F Y'),
         ]);
     }

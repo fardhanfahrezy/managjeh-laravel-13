@@ -20,7 +20,7 @@
         <!-- 4 Metric Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             <!-- Total Saldo -->
-            <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm relative overflow-hidden">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-xs relative overflow-hidden">
                 <div class="flex items-center justify-between">
                     <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Total Saldo Bersih</span>
                     <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center">
@@ -38,7 +38,7 @@
             </div>
 
             <!-- Pemasukan Bulan Ini -->
-            <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm relative overflow-hidden">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-xs relative overflow-hidden">
                 <div class="flex items-center justify-between">
                     <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Pemasukan Bulan Ini</span>
                     <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
@@ -56,7 +56,7 @@
             </div>
 
             <!-- Pengeluaran Bulan Ini -->
-            <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm relative overflow-hidden">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-xs relative overflow-hidden">
                 <div class="flex items-center justify-between">
                     <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Pengeluaran Bulan Ini</span>
                     <div class="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 flex items-center justify-center">
@@ -74,7 +74,7 @@
             </div>
 
             <!-- Net Savings / Tabungan Bersih -->
-            <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm relative overflow-hidden">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-xs relative overflow-hidden">
                 <div class="flex items-center justify-between">
                     <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Tabungan Bersih</span>
                     <div class="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 flex items-center justify-center">
@@ -94,10 +94,10 @@
 
         <!-- Main 2-Column Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Left 2 Cols: Recent Transactions & Quick Actions -->
+            <!-- Left 2 Cols: Recent Transactions & Goals / Upcoming Bills -->
             <div class="lg:col-span-2 space-y-6">
                 <!-- Recent Transactions Card -->
-                <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-xs overflow-hidden">
                     <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
                         <div>
                             <h2 class="text-lg font-bold text-gray-900 dark:text-white">Transaksi Terbaru</h2>
@@ -115,7 +115,7 @@
                         @forelse ($recentTransactions as $tx)
                             <div class="p-4 sm:px-6 flex items-center justify-between hover:bg-gray-50/50 dark:hover:bg-gray-750 transition">
                                 <div class="flex items-center gap-3.5">
-                                    <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 {{ $tx->tipe === 'income' ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400' : ($tx->tipe === 'expense' ? 'bg-rose-50 text-rose-600 dark:bg-rose-950/60 dark:text-rose-400' : 'bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400') }}">
+                                    <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 {{ $tx->tipe === 'income' ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400' : ($tx->tipe === 'expense' ? 'bg-rose-50 text-rose-600 dark:bg-rose-950/60 dark:text-rose-400' : ($tx->tipe === 'saving' ? 'bg-purple-50 text-purple-600 dark:bg-purple-950/60 dark:text-purple-400' : 'bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400')) }}">
                                         @if ($tx->tipe === 'income')
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12" />
@@ -123,6 +123,10 @@
                                         @elseif ($tx->tipe === 'expense')
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6" />
+                                            </svg>
+                                        @elseif ($tx->tipe === 'saving')
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                             </svg>
                                         @else
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -135,12 +139,14 @@
                                             <span class="font-semibold text-sm text-gray-900 dark:text-white">
                                                 @if ($tx->tipe === 'transfer')
                                                     Transfer: {{ $tx->account->nama_akun }} &rarr; {{ $tx->destinationAccount?->nama_akun ?? 'Akun' }}
+                                                @elseif ($tx->tipe === 'saving')
+                                                    Goal: {{ $tx->goal?->nama_goal ?? 'Tabungan' }}
                                                 @else
                                                     {{ $tx->category?->nama ?? 'Tanpa Kategori' }}
                                                 @endif
                                             </span>
-                                            <span class="px-2 py-0.5 text-[10px] font-medium rounded-full {{ $tx->tipe === 'income' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300' : ($tx->tipe === 'expense' ? 'bg-rose-100 text-rose-700 dark:bg-rose-900/50 dark:text-rose-300' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300') }}">
-                                                {{ ucfirst($tx->tipe) }}
+                                            <span class="px-2 py-0.5 text-[10px] font-medium rounded-full {{ $tx->tipe === 'income' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300' : ($tx->tipe === 'expense' ? 'bg-rose-100 text-rose-700 dark:bg-rose-900/50 dark:text-rose-300' : ($tx->tipe === 'saving' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300')) }}">
+                                                {{ $tx->tipe === 'saving' ? 'Tabungan' : ucfirst($tx->tipe) }}
                                             </span>
                                         </div>
                                         <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mt-0.5">
@@ -156,16 +162,13 @@
                                 </div>
 
                                 <div class="text-right">
-                                    <div class="font-bold text-sm sm:text-base {{ $tx->tipe === 'income' ? 'text-emerald-600 dark:text-emerald-400' : ($tx->tipe === 'expense' ? 'text-rose-600 dark:text-rose-400' : 'text-blue-600 dark:text-blue-400') }}">
+                                    <div class="font-bold text-sm sm:text-base {{ $tx->tipe === 'income' ? 'text-emerald-600 dark:text-emerald-400' : ($tx->tipe === 'expense' ? 'text-rose-600 dark:text-rose-400' : ($tx->tipe === 'saving' ? 'text-purple-600 dark:text-purple-400' : 'text-blue-600 dark:text-blue-400')) }}">
                                         {{ $tx->tipe === 'income' ? '+' : ($tx->tipe === 'expense' ? '-' : '') }} Rp {{ number_format($tx->jumlah, 2, ',', '.') }}
                                     </div>
                                 </div>
                             </div>
                         @empty
                             <div class="p-10 text-center text-gray-400 dark:text-gray-500">
-                                <svg class="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
                                 <p class="text-sm font-medium">Belum ada transaksi yang dicatat.</p>
                                 <a href="{{ route('transactions.create') }}" class="mt-3 inline-flex items-center text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline">
                                     + Catat transaksi pertamamu
@@ -174,12 +177,72 @@
                         @endforelse
                     </div>
                 </div>
+
+                <!-- Active Goals Widget -->
+                @if($activeGoals->isNotEmpty())
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-xs p-5">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-base font-bold text-gray-900 dark:text-white">Tujuan Finansial Aktif</h2>
+                            <a href="{{ route('goals.index') }}" class="text-xs font-semibold text-emerald-600 hover:text-emerald-700 dark:text-emerald-400">Lihat Semua</a>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            @foreach($activeGoals as $goal)
+                                @php $pct = $goal->percentage(); @endphp
+                                <div class="p-4 rounded-xl border border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-750">
+                                    <div class="flex items-center justify-between text-xs mb-2">
+                                        <span class="font-bold text-gray-900 dark:text-white truncate">{{ $goal->nama_goal }}</span>
+                                        <span class="font-semibold text-emerald-600">{{ $pct }}%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 dark:bg-gray-700 h-2 rounded-full overflow-hidden mb-2">
+                                        <div class="bg-emerald-500 h-2 rounded-full" style="width: {{ $pct }}%"></div>
+                                    </div>
+                                    <div class="flex items-center justify-between text-[10px] text-gray-500">
+                                        <span>Rp {{ number_format($goal->progres, 0, ',', '.') }}</span>
+                                        <span>Target: Rp {{ number_format($goal->target, 0, ',', '.') }}</span>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
             </div>
 
-            <!-- Right 1 Col: Account Wallets & Monthly Budget Progress -->
+            <!-- Right 1 Col: Account Wallets, Upcoming Bills, Monthly Budget -->
             <div class="space-y-6">
+                <!-- Upcoming Bills Card -->
+                @if($upcomingBills->isNotEmpty())
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-amber-200 dark:border-amber-900/60 shadow-xs p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                                <h2 class="text-sm font-bold text-gray-900 dark:text-white">Tagihan 7 Hari Mendatang</h2>
+                            </div>
+                            <a href="{{ route('recurring-rules.index') }}" class="text-[11px] font-semibold text-amber-600 hover:underline">Kelola</a>
+                        </div>
+                        <div class="space-y-2.5">
+                            @foreach($upcomingBills as $bill)
+                                @php
+                                    $dt = \Carbon\Carbon::parse($bill->tanggal_berikutnya);
+                                    $diff = (int) \Carbon\Carbon::today()->diffInDays($dt, false);
+                                @endphp
+                                <div class="p-2.5 rounded-xl bg-amber-50/50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/40 flex items-center justify-between text-xs">
+                                    <div>
+                                        <span class="font-bold text-gray-900 dark:text-white block">{{ $bill->catatan ?: ($bill->category?->nama_kategori ?? 'Tagihan') }}</span>
+                                        <span class="text-[10px] text-amber-700 dark:text-amber-400">
+                                            {{ $diff === 0 ? 'Jatuh tempo hari ini' : "Jatuh tempo dalam {$diff} hari ({$dt->format('d M')})" }}
+                                        </span>
+                                    </div>
+                                    <span class="font-bold text-rose-600 dark:text-rose-400">
+                                        Rp {{ number_format($bill->jumlah, 0, ',', '.') }}
+                                    </span>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
                 <!-- Accounts Card -->
-                <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-5">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-xs p-5">
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-base font-bold text-gray-900 dark:text-white">Dompet & Akun</h2>
                         <a href="{{ route('accounts.index') }}" class="text-xs font-semibold text-emerald-600 hover:text-emerald-700 dark:text-emerald-400">Kelola</a>
@@ -207,7 +270,7 @@
                 </div>
 
                 <!-- Budget Tracker Card -->
-                <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-5">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-xs p-5">
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-base font-bold text-gray-900 dark:text-white">Budgeting Bulan Ini</h2>
                         <a href="{{ route('budgets.index') }}" class="text-xs font-semibold text-emerald-600 hover:text-emerald-700 dark:text-emerald-400">Atur</a>

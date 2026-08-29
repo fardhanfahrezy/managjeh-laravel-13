@@ -19,9 +19,10 @@ class TransactionRequest extends FormRequest
     {
         $userId = $this->user()->id;
         $tipe = $this->input('tipe');
+        $hasSplits = ! empty($this->input('splits'));
 
         return [
-            'tipe' => ['required', Rule::in(['income', 'expense', 'transfer'])],
+            'tipe' => ['required', Rule::in(['income', 'expense', 'transfer', 'saving'])],
             'account_id' => [
                 'required',
                 'integer',
@@ -35,7 +36,7 @@ class TransactionRequest extends FormRequest
             ],
             'category_id' => [
                 'nullable',
-                Rule::requiredIf(in_array($tipe, ['income', 'expense'], true)),
+                Rule::requiredIf(in_array($tipe, ['income', 'expense'], true) && ! $hasSplits),
                 Rule::exists('categories', 'id')->where(function ($query) use ($userId, $tipe) {
                     $query->where('user_id', $userId);
                     if (in_array($tipe, ['income', 'expense'], true)) {
@@ -47,6 +48,13 @@ class TransactionRequest extends FormRequest
             'tanggal' => ['required', 'date'],
             'catatan' => ['nullable', 'string', 'max:1000'],
             'attachment' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
+            'splits' => ['nullable', 'array'],
+            'splits.*.category_id' => [
+                'required_with:splits',
+                Rule::exists('categories', 'id')->where('user_id', $userId),
+            ],
+            'splits.*.jumlah' => ['required_with:splits', 'numeric', 'min:0.01'],
+            'splits.*.catatan' => ['nullable', 'string', 'max:255'],
         ];
     }
 
@@ -60,6 +68,7 @@ class TransactionRequest extends FormRequest
             'destination_account_id.exists' => 'Akun tujuan transfer tidak valid atau bukan milik Anda.',
             'destination_account_id.different' => 'Akun tujuan transfer harus berbeda dengan akun asal.',
             'category_id.exists' => 'Kategori yang dipilih tidak valid atau tipe kategori tidak sesuai.',
+            'splits.*.category_id.exists' => 'Kategori rincian split tidak valid atau bukan milik Anda.',
         ];
     }
 }

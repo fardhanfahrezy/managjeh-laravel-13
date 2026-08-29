@@ -3,7 +3,9 @@
 namespace App\Services;
 
 use App\Models\Account;
+use App\Models\Goal;
 use App\Models\Transaction;
+use App\Models\TransactionSplit;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -44,6 +46,16 @@ class TransactionService
                 }
             }
 
+            // Validate splits if present
+            if (! empty($data['splits']) && is_array($data['splits'])) {
+                $totalSplit = array_sum(array_column($data['splits'], 'jumlah'));
+                if (abs($totalSplit - $jumlah) > 0.01) {
+                    throw ValidationException::withMessages([
+                        'splits' => 'Total rincian split (Rp '.number_format($totalSplit, 2, ',', '.').') harus sama dengan total transaksi (Rp '.number_format($jumlah, 2, ',', '.').').',
+                    ]);
+                }
+            }
+
             // Apply balance mutation
             if ($data['tipe'] === 'income') {
                 $sourceAccount->saldo += $jumlah;
@@ -59,17 +71,34 @@ class TransactionService
                 $destinationAccount->save();
             }
 
-            return Transaction::create([
+            $transaction = Transaction::create([
                 'user_id' => $user->id,
                 'account_id' => $sourceAccount->id,
                 'destination_account_id' => $destinationAccount?->id,
                 'category_id' => $data['category_id'] ?? null,
+                'goal_id' => $data['goal_id'] ?? null,
                 'jumlah' => $jumlah,
                 'tipe' => $data['tipe'],
                 'tanggal' => $data['tanggal'],
                 'catatan' => $data['catatan'] ?? null,
                 'attachment_url' => $data['attachment_url'] ?? null,
             ]);
+
+            // Save splits if provided
+            if (! empty($data['splits']) && is_array($data['splits'])) {
+                foreach ($data['splits'] as $split) {
+                    if (! empty($split['category_id']) && (float) $split['jumlah'] > 0) {
+                        TransactionSplit::create([
+                            'transaction_id' => $transaction->id,
+                            'category_id' => $split['category_id'],
+                            'jumlah' => $split['jumlah'],
+                            'catatan' => $split['catatan'] ?? null,
+                        ]);
+                    }
+                }
+            }
+
+            return $transaction;
         });
     }
 
@@ -134,6 +163,16 @@ class TransactionService
                 }
             }
 
+            // Validate splits if present
+            if (! empty($data['splits']) && is_array($data['splits'])) {
+                $totalSplit = array_sum(array_column($data['splits'], 'jumlah'));
+                if (abs($totalSplit - $newJumlah) > 0.01) {
+                    throw ValidationException::withMessages([
+                        'splits' => 'Total rincian split (Rp '.number_format($totalSplit, 2, ',', '.').') harus sama dengan total transaksi (Rp '.number_format($newJumlah, 2, ',', '.').').',
+                    ]);
+                }
+            }
+
             // 4. Apply new balance mutations
             if ($data['tipe'] === 'income') {
                 $newSourceAccount->saldo += $newJumlah;
@@ -154,12 +193,28 @@ class TransactionService
                 'account_id' => $newSourceAccount->id,
                 'destination_account_id' => $newDestAccount?->id,
                 'category_id' => $data['category_id'] ?? null,
+                'goal_id' => $data['goal_id'] ?? $transaction->goal_id,
                 'jumlah' => $newJumlah,
                 'tipe' => $data['tipe'],
                 'tanggal' => $data['tanggal'],
                 'catatan' => $data['catatan'] ?? null,
                 'attachment_url' => $data['attachment_url'] ?? $transaction->attachment_url,
             ]);
+
+            // Sync splits
+            $transaction->splits()->delete();
+            if (! empty($data['splits']) && is_array($data['splits'])) {
+                foreach ($data['splits'] as $split) {
+                    if (! empty($split['category_id']) && (float) $split['jumlah'] > 0) {
+                        TransactionSplit::create([
+                            'transaction_id' => $transaction->id,
+                            'category_id' => $split['category_id'],
+                            'jumlah' => $split['jumlah'],
+                            'catatan' => $split['catatan'] ?? null,
+                        ]);
+                    }
+                }
+            }
 
             return $transaction;
         });
@@ -192,6 +247,24 @@ class TransactionService
                     if ($destAccount) {
                         $destAccount->saldo -= $jumlah;
                         $destAccount->save();
+                    }
+                } elseif ($transaction->tipe === 'saving' && $transaction->goal_id) {
+                    $goal = Goal::where('id', $transaction->goal_id)->lockForUpdate()->first();
+                    if ($goal) {
+                        // Check if deposit or withdraw based on destination_account_id or catatan
+                        if ($transaction->destination_account_id !== null) {
+                            // It was a withdraw to destination_account_id: deduct destination account, restore goal
+                            $sourceAccount->saldo -= $jumlah;
+                            $sourceAccount->save();
+                            $goal->progres += $jumlah;
+                            $goal->save();
+                        } else {
+                            // It was a deposit from sourceAccount: restore account balance, deduct goal progress
+                            $sourceAccount->saldo += $jumlah;
+                            $sourceAccount->save();
+                            $goal->progres = max(0, $goal->progres - $jumlah);
+                            $goal->save();
+                        }
                     }
                 }
             }
