@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('destination_account_id')->nullable()->constrained('accounts')->restrictOnDelete();
             $table->foreignId('category_id')->nullable()->constrained('categories')->restrictOnDelete();
             $table->decimal('jumlah', 15, 2);
-            $table->enum('tipe', ['income', 'expense', 'transfer']);
+            $table->enum('tipe', ['income', 'expense', 'transfer', 'saving']);
             $table->date('tanggal');
             $table->text('catatan')->nullable();
             $table->string('attachment_url')->nullable();
