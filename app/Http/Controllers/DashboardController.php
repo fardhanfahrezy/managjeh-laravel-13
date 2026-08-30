@@ -3,12 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Budget;
+use App\Services\FinancialHealthService;
+use App\Services\ForecastService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
+    public function __construct(
+        protected ForecastService $forecastService,
+        protected FinancialHealthService $financialHealthService
+    ) {}
+
     public function index(Request $request): View
     {
         $user = $request->user();
@@ -91,6 +98,10 @@ class DashboardController extends Controller
             ->take(3)
             ->get();
 
+        // 8. Spending Forecast & Financial Health Summary
+        $forecast = $this->forecastService->getMonthlyForecast($user);
+        $financialHealth = $this->financialHealthService->getHealthAnalysis($user);
+
         return view('dashboard', [
             'totalSaldo' => $totalSaldo,
             'incomeBulanIni' => $incomeBulanIni,
@@ -102,6 +113,8 @@ class DashboardController extends Controller
             'budgets' => $budgets,
             'upcomingBills' => $upcomingBills,
             'activeGoals' => $activeGoals,
+            'forecast' => $forecast,
+            'financialHealth' => $financialHealth,
             'currentPeriod' => $now->translatedFormat('F Y'),
         ]);
     }

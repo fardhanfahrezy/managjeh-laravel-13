@@ -32,7 +32,7 @@ test('new users get default account and categories seeded automatically', functi
     $user = User::where('email', 'john@example.com')->first();
 
     expect($user)->not->toBeNull();
-    expect($user->accounts()->count())->toBe(1);
-    expect($user->accounts()->first()->nama_akun)->toBe('Kas / Dompet Tunai');
+    expect($user->accounts()->count())->toBe(3);
+    expect($user->accounts()->where('nama_akun', 'Kas / Dompet Tunai')->exists())->toBeTrue();
     expect($user->categories()->count())->toBe(12);
 });

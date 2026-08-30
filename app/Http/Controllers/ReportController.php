@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Services\ForecastService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -10,6 +11,10 @@ use Illuminate\View\View;
 
 class ReportController extends Controller
 {
+    public function __construct(
+        protected ForecastService $forecastService
+    ) {}
+
     public function index(Request $request): View
     {
         $user = $request->user();
@@ -54,7 +59,6 @@ class ReportController extends Controller
 
         for ($i = 5; $i >= 0; $i--) {
             $month = Carbon::now()->subMonths($i);
-            $monthKey = $month->format('Y-m');
             $trendMonths[] = $month->translatedFormat('M Y');
 
             $mStart = $month->copy()->startOfMonth()->toDateString();
@@ -81,6 +85,8 @@ class ReportController extends Controller
         $daysInMonth = $carbonDate->daysInMonth;
         $avgDailyExpense = $daysInMonth > 0 ? round($totalExpense / $daysInMonth, 2) : 0;
 
+        $forecast = $this->forecastService->getMonthlyForecast($user, $carbonDate);
+
         return view('reports.index', [
             'periode' => $periode,
             'periodeLabel' => $carbonDate->translatedFormat('F Y'),
@@ -93,6 +99,7 @@ class ReportController extends Controller
             'trendMonths' => $trendMonths,
             'incomeTrends' => $incomeTrends,
             'expenseTrends' => $expenseTrends,
+            'forecast' => $forecast,
         ]);
     }
 }

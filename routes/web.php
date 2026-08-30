@@ -4,6 +4,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\BudgetController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FinancialHealthController;
 use App\Http\Controllers\GoalController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
@@ -45,8 +46,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/recurring-rules/{recurring_rule}/toggle', [RecurringRuleController::class, 'toggle'])->name('recurring-rules.toggle');
     Route::post('/recurring-rules/process-now', [RecurringRuleController::class, 'processNow'])->name('recurring-rules.process-now');
 
-    // Reports
+    // Reports & Financial Health
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('/financial-health', [FinancialHealthController::class, 'index'])->name('financial-health.index');
 
     // Notifications
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');

@@ -15,15 +15,34 @@ class CreateDefaultUserData
     {
         $user = $event->user;
 
-        // Default Account
-        Account::create([
-            'user_id' => $user->id,
-            'nama_akun' => 'Kas / Dompet Tunai',
-            'tipe' => 'kas',
-            'saldo' => 0.00,
-            'warna' => '#10B981',
-            'catatan' => 'Akun dompet tunai default',
-        ]);
+        // Default Accounts (Kas, Bank, e-Wallet)
+        $defaultAccounts = [
+            [
+                'nama_akun' => 'Kas / Dompet Tunai',
+                'tipe' => 'kas',
+                'saldo' => 0.00,
+                'warna' => '#10B981',
+                'catatan' => 'Uang tunai fisik harian',
+            ],
+            [
+                'nama_akun' => 'Rekening Bank Utama',
+                'tipe' => 'bank',
+                'saldo' => 0.00,
+                'warna' => '#3B82F6',
+                'catatan' => 'Rekening tabungan perbankan utama',
+            ],
+            [
+                'nama_akun' => 'e-Wallet / Dompet Digital',
+                'tipe' => 'e-wallet',
+                'saldo' => 0.00,
+                'warna' => '#8B5CF6',
+                'catatan' => 'GoPay, OVO, ShopeePay, DANA, dll.',
+            ],
+        ];
+
+        foreach ($defaultAccounts as $acc) {
+            Account::create(array_merge($acc, ['user_id' => $user->id]));
+        }
 
         // Default Categories
         $defaultCategories = [
