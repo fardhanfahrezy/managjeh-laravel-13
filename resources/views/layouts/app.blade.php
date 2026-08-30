@@ -51,7 +51,7 @@
                     <svg class="w-5 h-5 transition-transform duration-200 group-hover:rotate-90" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
                     </svg>
-                    <span class="hidden sm:inline tracking-tight font-semibold">+ Transaksi</span>
+                    <span class="hidden sm:inline tracking-tight font-semibold">Transaksi</span>
                 </a>
             </aside>
         @endauth

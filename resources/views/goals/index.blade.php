@@ -18,7 +18,7 @@
         </div>
     </x-slot>
 
-    <div class="py-4" x-data="{ depositModal: false, withdrawModal: false, activeGoal: null }">
+    <div class="py-4" x-data="{ activeGoal: null }">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
 
             <!-- Summary Cards -->
@@ -105,18 +105,18 @@
                         <!-- Action Buttons -->
                         <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
                             <div class="flex items-center gap-2">
-                                <button @click="activeGoal = { id: {{ $goal->id }}, nama: '{{ addslashes($goal->nama_goal) }}', maxWithdraw: {{ $goal->progres }} }; depositModal = true" class="px-3.5 py-1.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-xl text-xs font-bold transition">
+                                <button @click="activeGoal = { id: {{ $goal->id }}, nama: '{{ addslashes($goal->nama_goal) }}', maxWithdraw: {{ $goal->progres }} }; $dispatch('open-modal', 'deposit-modal')" class="px-3.5 py-1.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-xl text-xs font-bold transition">
                                     + Setor Dana
                                 </button>
                                 @if((float)$goal->progres > 0)
-                                    <button @click="activeGoal = { id: {{ $goal->id }}, nama: '{{ addslashes($goal->nama_goal) }}', maxWithdraw: {{ $goal->progres }} }; withdrawModal = true" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold transition">
+                                    <button @click="activeGoal = { id: {{ $goal->id }}, nama: '{{ addslashes($goal->nama_goal) }}', maxWithdraw: {{ $goal->progres }} }; $dispatch('open-modal', 'withdraw-modal')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold transition">
                                         Tarik
                                     </button>
                                 @endif
                             </div>
 
                             <div class="flex items-center gap-1">
-                                <a href="{{ route('goals.edit', $goal) }}" class="p-2 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded-xl transition" title="Edit Goal">
+                                <a href="{{ route('goals.edit', $goal) }}" aria-label="Edit goal {{ $goal->nama_goal }}" class="p-2 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded-xl transition" title="Edit Goal">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                     </svg>
@@ -124,7 +124,7 @@
                                 <form method="POST" action="{{ route('goals.destroy', $goal) }}" onsubmit="return confirm('Hapus goal ini?')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="p-2 text-red-400 hover:text-red-600 rounded-xl transition" title="Hapus Goal">
+                                    <button type="submit" aria-label="Hapus goal {{ $goal->nama_goal }}" class="p-2 text-red-400 hover:text-red-600 rounded-xl transition" title="Hapus Goal">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                         </svg>
@@ -144,25 +144,25 @@
                         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">
                             Mulai rencanakan pembelian rumah, dana darurat, liburan, atau gadget impian Anda.
                         </p>
-                        <a href="{{ route('goals.create') }}" class="mt-4 inline-flex items-center gap-1.5 px-5 py-2.5 bg-blue-600 text-white text-xs font-bold rounded-xl shadow-md">
+                        <a href="{{ route('goals.create') }}" class="mt-4 inline-flex items-center gap-1.5 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-md">
                             + Buat Goal Sekarang
                         </a>
                     </div>
                 @endforelse
             </div>
 
-            <!-- Deposit Modal -->
-            <div x-show="depositModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-                <div @click.away="depositModal = false" class="w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 sm:p-7 space-y-4 animate-glide">
+            <!-- Deposit Modal using x-modal -->
+            <x-modal name="deposit-modal" focusable>
+                <div class="p-6 sm:p-7 space-y-4">
                     <div class="flex items-center justify-between">
                         <h3 class="font-black text-lg text-slate-900 dark:text-white">Setor ke Goal: <span x-text="activeGoal?.nama" class="text-blue-600 dark:text-blue-400"></span></h3>
-                        <button @click="depositModal = false" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+                        <button type="button" @click="$dispatch('close')" aria-label="Tutup modal" class="text-slate-400 hover:text-slate-600 dark:hover:text-white text-xl font-bold">&times;</button>
                     </div>
 
                     <form :action="'/goals/' + activeGoal?.id + '/deposit'" method="POST" class="space-y-4">
                         @csrf
                         <div>
-                            <label class="block uppercase text-xs font-bold tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Ambil dari Akun / Dompet</label>
+                            <x-input-label value="Ambil dari Akun / Dompet" class="mb-1.5" />
                             <select name="account_id" required class="w-full rounded-xl border-slate-300 dark:border-slate-700 dark:bg-slate-900 text-sm font-semibold focus:border-blue-600 focus:ring-2 focus:ring-blue-600">
                                 @foreach($accounts as $acc)
                                     <option value="{{ $acc->id }}">{{ $acc->nama_akun }} (Saldo: Rp {{ number_format($acc->saldo, 0, ',', '.') }})</option>
@@ -171,35 +171,35 @@
                         </div>
 
                         <div>
-                            <label class="block uppercase text-xs font-bold tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Nominal Setoran (Rp)</label>
-                            <input type="number" name="jumlah" min="1" step="1" required placeholder="Contoh: 500000" class="w-full rounded-xl border-slate-300 dark:border-slate-700 dark:bg-slate-900 text-sm font-bold focus:border-blue-600 focus:ring-2 focus:ring-blue-600">
+                            <x-input-label value="Nominal Setoran (Rp)" class="mb-1.5" />
+                            <x-text-input type="number" name="jumlah" min="1" step="1" required placeholder="Contoh: 500000" class="w-full font-bold" />
                         </div>
 
                         <div>
-                            <label class="block uppercase text-xs font-bold tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Catatan (Opsional)</label>
-                            <input type="text" name="catatan" placeholder="Contoh: Tabungan gaji bulan ini" class="w-full rounded-xl border-slate-300 dark:border-slate-700 dark:bg-slate-900 text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600">
+                            <x-input-label value="Catatan (Opsional)" class="mb-1.5" />
+                            <x-text-input type="text" name="catatan" placeholder="Contoh: Tabungan gaji bulan ini" class="w-full" />
                         </div>
 
                         <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
-                            <button type="button" @click="depositModal = false" class="px-4 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition">Batal</button>
-                            <button type="submit" class="px-5 py-2.5 bg-slate-900 dark:bg-blue-600 hover:bg-slate-800 dark:hover:bg-blue-700 text-white text-xs font-black rounded-xl shadow-md transition">Konfirmasi Setor</button>
+                            <x-secondary-button @click="$dispatch('close')">Batal</x-secondary-button>
+                            <x-primary-button>Konfirmasi Setor</x-primary-button>
                         </div>
                     </form>
                 </div>
-            </div>
+            </x-modal>
 
-            <!-- Withdraw Modal -->
-            <div x-show="withdrawModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-                <div @click.away="withdrawModal = false" class="w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 sm:p-7 space-y-4 animate-glide">
+            <!-- Withdraw Modal using x-modal -->
+            <x-modal name="withdraw-modal" focusable>
+                <div class="p-6 sm:p-7 space-y-4">
                     <div class="flex items-center justify-between">
                         <h3 class="font-black text-lg text-slate-900 dark:text-white">Tarik dari Goal: <span x-text="activeGoal?.nama" class="text-amber-500"></span></h3>
-                        <button @click="withdrawModal = false" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+                        <button type="button" @click="$dispatch('close')" aria-label="Tutup modal" class="text-slate-400 hover:text-slate-600 dark:hover:text-white text-xl font-bold">&times;</button>
                     </div>
 
                     <form :action="'/goals/' + activeGoal?.id + '/withdraw'" method="POST" class="space-y-4">
                         @csrf
                         <div>
-                            <label class="block uppercase text-xs font-bold tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Transfer ke Akun / Dompet</label>
+                            <x-input-label value="Transfer ke Akun / Dompet" class="mb-1.5" />
                             <select name="account_id" required class="w-full rounded-xl border-slate-300 dark:border-slate-700 dark:bg-slate-900 text-sm font-semibold focus:border-blue-600 focus:ring-2 focus:ring-blue-600">
                                 @foreach($accounts as $acc)
                                     <option value="{{ $acc->id }}">{{ $acc->nama_akun }} (Saldo: Rp {{ number_format($acc->saldo, 0, ',', '.') }})</option>
@@ -208,25 +208,24 @@
                         </div>
 
                         <div>
-                            <label class="block uppercase text-xs font-bold tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Nominal Penarikan (Rp)</label>
-                            <input type="number" name="jumlah" min="1" step="1" :max="activeGoal?.maxWithdraw" required placeholder="Contoh: 250000" class="w-full rounded-xl border-slate-300 dark:border-slate-700 dark:bg-slate-900 text-sm font-bold focus:border-blue-600 focus:ring-2 focus:ring-blue-600">
+                            <x-input-label value="Nominal Penarikan (Rp)" class="mb-1.5" />
+                            <x-text-input type="number" name="jumlah" min="1" step="1" :max="activeGoal?.maxWithdraw" required placeholder="Contoh: 250000" class="w-full font-bold" />
                             <span class="text-[11px] text-slate-400 mt-1 block font-medium">Maksimal penarikan: Rp <span class="font-bold text-slate-700 dark:text-slate-300" x-text="Number(activeGoal?.maxWithdraw || 0).toLocaleString('id-ID')"></span></span>
                         </div>
 
                         <div>
-                            <label class="block uppercase text-xs font-bold tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Catatan (Opsional)</label>
-                            <input type="text" name="catatan" placeholder="Contoh: Tarik untuk kebutuhan darurat" class="w-full rounded-xl border-slate-300 dark:border-slate-700 dark:bg-slate-900 text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600">
+                            <x-input-label value="Catatan (Opsional)" class="mb-1.5" />
+                            <x-text-input type="text" name="catatan" placeholder="Contoh: Tarik untuk kebutuhan darurat" class="w-full" />
                         </div>
 
                         <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
-                            <button type="button" @click="withdrawModal = false" class="px-4 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition">Batal</button>
-                            <button type="submit" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-black rounded-xl shadow-md transition">Konfirmasi Tarik</button>
+                            <x-secondary-button @click="$dispatch('close')">Batal</x-secondary-button>
+                            <button type="submit" class="inline-flex items-center justify-center px-4 py-2.5 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white font-bold text-xs rounded-xl shadow-md shadow-amber-500/20 focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition">Konfirmasi Tarik</button>
                         </div>
                     </form>
                 </div>
-            </div>
+            </x-modal>
 
         </div>
     </div>
 </x-app-layout>
-

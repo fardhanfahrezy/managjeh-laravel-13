@@ -1,34 +1,34 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center gap-3">
-            <a href="{{ route('categories.index') }}" class="p-2 rounded-lg text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            <a href="{{ route('categories.index') }}" aria-label="Kembali ke daftar kategori" class="p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
             </a>
             <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Tambah Kategori Baru</h1>
-                <p class="text-xs text-gray-500 dark:text-gray-400">Buat label kategori baru untuk mengelompokkan arus kas.</p>
+                <h1 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Tambah Kategori Baru</h1>
+                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">Buat label kategori baru untuk mengelompokkan arus kas.</p>
             </div>
         </div>
     </x-slot>
 
     <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-6 sm:p-8">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm p-6 sm:p-8">
             <form method="POST" action="{{ route('categories.store') }}" class="space-y-6">
                 @csrf
 
                 <!-- Nama Kategori -->
                 <div>
-                    <label for="nama" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Nama Kategori</label>
-                    <input type="text" id="nama" name="nama" value="{{ old('nama') }}" placeholder="Contoh: Belanja Bulanan, Freelance, Donasi" class="mt-1.5 block w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring-emerald-500 text-sm" required />
+                    <x-input-label for="nama" value="Nama Kategori" />
+                    <x-text-input type="text" id="nama" name="nama" :value="old('nama')" placeholder="Contoh: Belanja Bulanan, Freelance, Donasi" class="mt-1.5 block w-full font-semibold" required />
                     <x-input-error class="mt-2" :messages="$errors->get('nama')" />
                 </div>
 
                 <!-- Tipe Kategori -->
                 <div>
-                    <label for="tipe" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Tipe Kategori</label>
-                    <select id="tipe" name="tipe" class="mt-1.5 block w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring-emerald-500 text-sm" required>
+                    <x-input-label for="tipe" value="Tipe Kategori" />
+                    <select id="tipe" name="tipe" class="mt-1.5 block w-full rounded-xl border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-white shadow-xs focus:border-blue-600 focus:ring-2 focus:ring-blue-600 text-sm font-semibold" required>
                         <option value="expense" {{ old('tipe') === 'expense' ? 'selected' : '' }}>Pengeluaran (Expense)</option>
                         <option value="income" {{ old('tipe') === 'income' ? 'selected' : '' }}>Pemasukan (Income)</option>
                     </select>
@@ -37,22 +37,22 @@
 
                 <!-- Warna Penanda -->
                 <div>
-                    <label for="warna" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Warna Penanda</label>
+                    <x-input-label for="warna" value="Warna Penanda" />
                     <div class="flex items-center gap-3 mt-1.5">
-                        <input type="color" id="warna" name="warna" value="{{ old('warna', '#F59E0B') }}" class="w-10 h-10 p-1 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer bg-transparent" />
-                        <span class="text-xs text-gray-400">Pilih warna untuk grafik laporan dan badge.</span>
+                        <input type="color" id="warna" name="warna" value="{{ old('warna', '#F59E0B') }}" class="w-10 h-10 p-1 rounded-xl border border-slate-300 dark:border-slate-700 cursor-pointer bg-transparent" />
+                        <span class="text-xs text-slate-400">Pilih warna untuk grafik laporan dan badge.</span>
                     </div>
                     <x-input-error class="mt-2" :messages="$errors->get('warna')" />
                 </div>
 
                 <!-- Buttons -->
-                <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-700">
-                    <a href="{{ route('categories.index') }}" class="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition">
+                <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+                    <a href="{{ route('categories.index') }}" class="px-4 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition">
                         Batal
                     </a>
-                    <button type="submit" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-xl shadow-sm transition">
+                    <x-primary-button>
                         Simpan Kategori
-                    </button>
+                    </x-primary-button>
                 </div>
             </form>
         </div>

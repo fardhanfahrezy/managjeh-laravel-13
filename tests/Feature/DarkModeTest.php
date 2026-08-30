@@ -20,8 +20,10 @@ test('guest pages render dark mode initialization script', function () {
     $response->assertOk();
     $response->assertSee("localStorage.theme === 'dark'", false);
     $response->assertSee("document.documentElement.classList.add('dark')", false);
-    $response->assertSee('dark:bg-gray-800', false);
+    $response->assertSee('dark:bg-slate-900', false);
+    $response->assertSee('dark:bg-slate-950', false);
 });
+
 
 test('navigation bar contains mobile dark mode toggle option', function () {
     $user = User::factory()->create();

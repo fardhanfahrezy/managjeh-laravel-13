@@ -1,51 +1,67 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center gap-2">
-            <a href="{{ route('goals.index') }}" class="text-sm font-semibold text-gray-500 hover:text-gray-700 dark:text-gray-400">&larr; Kembali ke Goals</a>
-            <span class="text-gray-300">/</span>
-            <h2 class="font-bold text-xl text-gray-900 dark:text-white leading-tight">
-                {{ __('Edit Tujuan Finansial') }}
-            </h2>
+        <div class="flex items-center gap-3">
+            <a href="{{ route('goals.index') }}" aria-label="Kembali ke daftar tujuan finansial" class="p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+            </a>
+            <div>
+                <h1 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Edit Goal</h1>
+                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">Perbarui rencana impian dan target dana {{ $goal->nama_goal }}.</p>
+            </div>
         </div>
     </x-slot>
 
-    <div class="py-8">
-        <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="p-6 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-xs">
-                <form method="POST" action="{{ route('goals.update', $goal) }}" class="space-y-5">
-                    @csrf
-                    @method('PUT')
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm p-6 sm:p-8">
+            <form method="POST" action="{{ route('goals.update', $goal) }}" class="space-y-6">
+                @csrf
+                @method('PUT')
 
-                    <div>
-                        <x-input-label for="nama_goal" value="Nama Tujuan / Impian" />
-                        <x-text-input id="nama_goal" name="nama_goal" type="text" class="mt-1 block w-full" :value="old('nama_goal', $goal->nama_goal)" required />
-                        <x-input-error class="mt-2" :messages="$errors->get('nama_goal')" />
-                    </div>
+                <!-- Nama Goal -->
+                <div>
+                    <x-input-label for="nama_goal" value="Nama Tujuan / Impian" />
+                    <x-text-input id="nama_goal" name="nama_goal" type="text" class="mt-1.5 block w-full font-semibold" :value="old('nama_goal', $goal->nama_goal)" required />
+                    <x-input-error class="mt-2" :messages="$errors->get('nama_goal')" />
+                </div>
 
-                    <div>
-                        <x-input-label for="target" value="Target Nominal (Rp)" />
-                        <x-text-input id="target" name="target" type="number" min="1" step="1" class="mt-1 block w-full" :value="old('target', (int)$goal->target)" required />
-                        <x-input-error class="mt-2" :messages="$errors->get('target')" />
+                <!-- Target Nominal -->
+                <div>
+                    <x-input-label for="target" value="Target Nominal (Rp)" />
+                    <div class="relative mt-1.5 rounded-xl shadow-xs">
+                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+                            <span class="text-slate-400 sm:text-sm font-bold">Rp</span>
+                        </div>
+                        <x-text-input id="target" name="target" type="number" min="1" step="1" class="block w-full pl-12 font-bold" :value="old('target', (int)$goal->target)" required />
                     </div>
+                    <x-input-error class="mt-2" :messages="$errors->get('target')" />
+                </div>
 
-                    <div>
-                        <x-input-label for="deadline" value="Target Tenggat Waktu (Opsional)" />
-                        <x-text-input id="deadline" name="deadline" type="date" class="mt-1 block w-full" :value="old('deadline', $goal->deadline ? \Carbon\Carbon::parse($goal->deadline)->format('Y-m-d') : '')" />
-                        <x-input-error class="mt-2" :messages="$errors->get('deadline')" />
-                    </div>
+                <!-- Tenggat Waktu -->
+                <div>
+                    <x-input-label for="deadline" value="Target Tenggat Waktu (Opsional)" />
+                    <x-text-input id="deadline" name="deadline" type="date" class="mt-1.5 block w-full font-semibold" :value="old('deadline', $goal->deadline ? \Carbon\Carbon::parse($goal->deadline)->format('Y-m-d') : '')" />
+                    <x-input-error class="mt-2" :messages="$errors->get('deadline')" />
+                </div>
 
-                    <div>
-                        <x-input-label for="catatan" value="Catatan / Rencana Alokasi (Opsional)" />
-                        <textarea id="catatan" name="catatan" rows="3" class="mt-1 block w-full rounded-xl border-gray-200 dark:border-gray-700 dark:bg-gray-900 text-sm focus:border-emerald-500 focus:ring-emerald-500">{{ old('catatan', $goal->catatan) }}</textarea>
-                        <x-input-error class="mt-2" :messages="$errors->get('catatan')" />
-                    </div>
+                <!-- Catatan -->
+                <div>
+                    <x-input-label for="catatan" value="Catatan / Rencana Alokasi (Opsional)" />
+                    <textarea id="catatan" name="catatan" rows="3" class="mt-1.5 block w-full rounded-xl border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-white text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600">{{ old('catatan', $goal->catatan) }}</textarea>
+                    <x-input-error class="mt-2" :messages="$errors->get('catatan')" />
+                </div>
 
-                    <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-700">
-                        <a href="{{ route('goals.index') }}" class="px-4 py-2 text-sm font-semibold text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition">Batal</a>
-                        <x-primary-button>Simpan Perubahan</x-primary-button>
-                    </div>
-                </form>
-            </div>
+                <!-- Buttons -->
+                <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+                    <a href="{{ route('goals.index') }}" class="px-4 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition">
+                        Batal
+                    </a>
+                    <x-primary-button>
+                        Simpan Perubahan
+                    </x-primary-button>
+                </div>
+            </form>
         </div>
     </div>
 </x-app-layout>
