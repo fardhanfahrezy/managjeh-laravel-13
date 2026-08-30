@@ -24,7 +24,6 @@ test('guest pages render dark mode initialization script', function () {
     $response->assertSee('dark:bg-slate-950', false);
 });
 
-
 test('navigation bar contains mobile dark mode toggle option', function () {
     $user = User::factory()->create();
 

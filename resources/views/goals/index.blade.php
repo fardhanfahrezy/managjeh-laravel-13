@@ -159,7 +159,7 @@
                         <button type="button" @click="$dispatch('close')" aria-label="Tutup modal" class="text-slate-400 hover:text-slate-600 dark:hover:text-white text-xl font-bold">&times;</button>
                     </div>
 
-                    <form :action="'/goals/' + activeGoal?.id + '/deposit'" method="POST" class="space-y-4">
+                    <form x-bind:action="'/goals/' + (activeGoal ? activeGoal.id : '') + '/deposit'" method="POST" class="space-y-4">
                         @csrf
                         <div>
                             <x-input-label value="Ambil dari Akun / Dompet" class="mb-1.5" />
@@ -192,11 +192,11 @@
             <x-modal name="withdraw-modal" focusable>
                 <div class="p-6 sm:p-7 space-y-4">
                     <div class="flex items-center justify-between">
-                        <h3 class="font-black text-lg text-slate-900 dark:text-white">Tarik dari Goal: <span x-text="activeGoal?.nama" class="text-amber-500"></span></h3>
+                        <h3 class="font-black text-lg text-slate-900 dark:text-white">Tarik dari Goal: <span x-text="activeGoal ? activeGoal.nama : ''" class="text-amber-500"></span></h3>
                         <button type="button" @click="$dispatch('close')" aria-label="Tutup modal" class="text-slate-400 hover:text-slate-600 dark:hover:text-white text-xl font-bold">&times;</button>
                     </div>
 
-                    <form :action="'/goals/' + activeGoal?.id + '/withdraw'" method="POST" class="space-y-4">
+                    <form x-bind:action="'/goals/' + (activeGoal ? activeGoal.id : '') + '/withdraw'" method="POST" class="space-y-4">
                         @csrf
                         <div>
                             <x-input-label value="Transfer ke Akun / Dompet" class="mb-1.5" />
@@ -209,9 +209,10 @@
 
                         <div>
                             <x-input-label value="Nominal Penarikan (Rp)" class="mb-1.5" />
-                            <x-text-input type="number" name="jumlah" min="1" step="1" :max="activeGoal?.maxWithdraw" required placeholder="Contoh: 250000" class="w-full font-bold" />
-                            <span class="text-[11px] text-slate-400 mt-1 block font-medium">Maksimal penarikan: Rp <span class="font-bold text-slate-700 dark:text-slate-300" x-text="Number(activeGoal?.maxWithdraw || 0).toLocaleString('id-ID')"></span></span>
+                            <x-text-input type="number" name="jumlah" min="1" step="1" x-bind:max="activeGoal ? activeGoal.maxWithdraw : null" required placeholder="Contoh: 250000" class="w-full font-bold" />
+                            <span class="text-[11px] text-slate-400 mt-1 block font-medium">Maksimal penarikan: Rp <span class="font-bold text-slate-700 dark:text-slate-300" x-text="Number(activeGoal ? activeGoal.maxWithdraw : 0).toLocaleString('id-ID')"></span></span>
                         </div>
+
 
                         <div>
                             <x-input-label value="Catatan (Opsional)" class="mb-1.5" />
